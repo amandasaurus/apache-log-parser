@@ -1,5 +1,17 @@
 import re
 
+class ApacheLogParserException(Exception): pass
+
+class LineDoesntMatchException(ApacheLogParserException):
+    def __init__(self, log_line=None, regex=None, *args, **kwargs):
+        self.log_line = log_line
+        self.regex = regex
+    
+    def __repr__(self):
+        return u"LineDoesntMatchException(log_line={0!r}, regex={1!r})".format(self.log_line, self.regex)
+
+    __str__ = __repr__
+
 def extract_inner_value(output_prefix, input_suffix):
     """
     Given an input format like %{Referer}o return a function that will extract that 'Referer' from a match
@@ -93,7 +105,10 @@ def make_parser(format_string):
 
     def matcher(log_line):
         match = log_line_regex.match(log_line)
-        return match.groupdict()
+        if match is None:
+            raise LineDoesntMatchException(log_line=log_line, regex=log_line_regex.pattern)
+        else:
+            return match.groupdict()
         
     return matcher
     
