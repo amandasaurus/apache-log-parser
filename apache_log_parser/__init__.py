@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 
 class ApacheLogParserException(Exception): pass
 
@@ -39,6 +40,24 @@ def extra_request_from_first_line(matched_strings):
     results = { 'request_first_line': first_line, 'request_method': match.groupdict()['method'], 'request_url': match.groupdict()['url'], 'request_http_ver': match.groupdict()['http_ver']}
     return results
 
+
+def apachetime(s):
+    """
+    Given a string representation of a datetime in apache format (e.g.
+    "01/Sep/2012:06:05:11 +0000"), return the python datetime for that string
+    """
+    month_map = {'Jan': 1, 'Feb': 2, 'Mar':3, 'Apr':4, 'May':5, 'Jun':6, 'Jul':7, 
+        'Aug':8,  'Sep': 9, 'Oct':10, 'Nov': 11, 'Dec': 12}
+    s = s[1:-1]
+    return datetime(int(s[7:11]), month_map[s[3:6]], int(s[0:2]), \
+         int(s[12:14]), int(s[15:17]), int(s[18:20]))
+
+def format_time(matched_strings):
+    time_recieved = matched_strings['time_recieved']
+    obj = apachetime(time_recieved)
+    return {'time_recieved':time_recieved, 'time_recieved_datetimeobj': obj, 'time_recieved_isoformat': obj.isoformat()}
+
+
 FORMAT_STRINGS = [
     ['%%', '%', lambda match: '', lambda matched_strings: matched_strings],
     [make_regex('%a'), '\d{,3}(.\d{\3}){3}', lambda match: 'remote_ip', lambda matched_strings: matched_strings], #	Remote IP-address
@@ -65,7 +84,7 @@ FORMAT_STRINGS = [
     [make_regex('%r'), '.*?', lambda match: 'request_first_line', extra_request_from_first_line], #	First line of request
     [make_regex('%R'), '.*?', lambda match: 'handler', lambda matched_strings: matched_strings], #	The handler generating the response (if any).
     [make_regex('%s'), '.*?', lambda match: 'status', lambda matched_strings: matched_strings], #	Status. For requests that got internally redirected, this is the status of the *original* request --- %>s for the last.
-    [make_regex('%t'), '.*?', lambda match: 'time_recieved', lambda matched_strings: matched_strings], #	Time the request was received (standard english format)
+    [make_regex('%t'), '.*?', lambda match: 'time_recieved', format_time], #	Time the request was received (standard english format)
     [make_regex('%\{[^\]]+?\}t'), '.*?', extract_inner_value("time_", "t") , lambda matched_strings: matched_strings], #	The time, in the form given by format, which should be in strftime(3) format. (potentially localized)
     [make_regex('%T'), '.*?', lambda match: 'time_s', lambda matched_strings: matched_strings], #	The time taken to serve the request, in seconds.
     [make_regex('%u'), '.*?', lambda match: 'remote_user', lambda matched_strings: matched_strings], #	Remote user (from auth; may be bogus if return status (%s) is 401)
