@@ -68,7 +68,7 @@ FORMAT_STRINGS = [
     [make_regex('%B'), '(\d+|-)', lambda match: 'response_bytes', lambda matched_strings: matched_strings], #	Size of response in bytes, excluding HTTP headers.
     [make_regex('%b'), '(\d+|-)', lambda match: 'response_bytes_clf', lambda matched_strings: matched_strings], #	Size of response in bytes, excluding HTTP headers. In CLF format, i.e. a '-' rather than a 0 when no bytes are sent.
     [make_regex('%\{[^\]]+?\}C'), '.*?', extract_inner_value("cookie_", "C") , lambda matched_strings: matched_strings], #	The contents of cookie Foobar in the request sent to the server. Only version 0 cookies are fully supported.
-    [make_regex('%D'), '\d+', lambda match: 'time_us', lambda matched_strings: matched_strings], #	The time taken to serve the request, in microseconds.
+    [make_regex('%D'), '-?\d+', lambda match: 'time_us', lambda matched_strings: matched_strings], #	The time taken to serve the request, in microseconds.
     [make_regex('%\{[^\}]+?\}e'), '.*?', 'env', lambda matched_strings: matched_strings], #	The contents of the environment variable FOOBAR
     [make_regex('%f'), '.*?', lambda match: 'filename', lambda matched_strings: matched_strings], #	Filename
     [make_regex('%h'), '.*?', lambda match: 'remote_host', lambda matched_strings: matched_strings], #	Remote host
