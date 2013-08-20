@@ -35,9 +35,12 @@ def make_regex(format_template):
 
 def extra_request_from_first_line(matched_strings):
     first_line = matched_strings['request_first_line']
-    match = re.match("^(?P<method>GET|HEAD|POST|OPTIONS|PUT|CONNECT|PATCH|PROPFIND)\s?(?P<url>.{,10000}?)(\s+HTTP/(?P<http_ver>1.[01]))?$", first_line)
-    assert match is not None
-    results = { 'request_first_line': first_line, 'request_method': match.groupdict()['method'], 'request_url': match.groupdict()['url'], 'request_http_ver': match.groupdict()['http_ver']}
+    if first_line == '-':
+        results = { 'request_first_line': first_line, 'request_method': '', 'request_url': '', 'request_http_ver': ''}
+    else:
+        match = re.match("^(?P<method>GET|HEAD|POST|OPTIONS|PUT|CONNECT|PATCH|PROPFIND)\s?(?P<url>.{,10000}?)(\s+HTTP/(?P<http_ver>1.[01]))?$", first_line)
+        assert match is not None
+        results = { 'request_first_line': first_line, 'request_method': match.groupdict()['method'], 'request_url': match.groupdict()['url'], 'request_http_ver': match.groupdict()['http_ver']}
     return results
 
 
