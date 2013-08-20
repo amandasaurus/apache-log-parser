@@ -11,6 +11,8 @@ class ApacheLogParserTestCase(unittest.TestCase):
         self.assertEqual(log_data['status'], '200')
         self.assertEqual(log_data['pid'], '6113')
         self.assertEqual(log_data['request_first_line'], 'GET / HTTP/1.1')
+        self.assertEqual(log_data['request_method'], 'GET')
+        self.assertEqual(log_data['request_url'], '/')
         
 
 if __name__ == '__main__':

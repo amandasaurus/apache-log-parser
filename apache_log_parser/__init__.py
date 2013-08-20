@@ -32,6 +32,13 @@ def make_regex(format_template):
     percent, rest = format_template[0], format_template[1:]
     return percent+"[<>]?"+rest
 
+def extra_request_from_first_line(matched_strings):
+    first_line = matched_strings['request_first_line']
+    match = re.match("^(?P<method>GET|HEAD|POST|OPTIONS|PUT|CONNECT|PATCH|PROPFIND)\s?(?P<url>.{,10000}?)(\s+HTTP/(?P<http_ver>1.[01]))?$", first_line)
+    assert match is not None
+    results = { 'request_first_line': first_line, 'request_method': match.groupdict()['method'], 'request_url': match.groupdict()['url'], 'request_http_ver': match.groupdict()['http_ver']}
+    return results
+
 FORMAT_STRINGS = [
     ['%%', '%', lambda match: '', lambda matched_strings: matched_strings],
     [make_regex('%a'), '\d{,3}(.\d{\3}){3}', lambda match: 'remote_ip', lambda matched_strings: matched_strings], #	Remote IP-address
@@ -55,7 +62,7 @@ FORMAT_STRINGS = [
     [make_regex('%P'), '.*?', lambda match: 'pid', lambda matched_strings: matched_strings], #	The process ID of the child that serviced the request.
     [make_regex('%\{[^\]]+?\}P'), '.*?', extract_inner_value("pid_", "P") , lambda matched_strings: matched_strings], #	The process ID or thread id of the child that serviced the request. Valid formats are pid, tid, and hextid. hextid requires APR 1.2.0 or higher.
     [make_regex('%q'), '.*?', lambda match: 'query_string' , lambda matched_strings: matched_strings], #	The query string (prepended with a ? if a query string exists, otherwise an empty string)
-    [make_regex('%r'), '.*?', lambda match: 'request_first_line', lambda matched_strings: matched_strings], #	First line of request
+    [make_regex('%r'), '.*?', lambda match: 'request_first_line', extra_request_from_first_line], #	First line of request
     [make_regex('%R'), '.*?', lambda match: 'handler', lambda matched_strings: matched_strings], #	The handler generating the response (if any).
     [make_regex('%s'), '.*?', lambda match: 'status', lambda matched_strings: matched_strings], #	Status. For requests that got internally redirected, this is the status of the *original* request --- %>s for the last.
     [make_regex('%t'), '.*?', lambda match: 'time_recieved', lambda matched_strings: matched_strings], #	Time the request was received (standard english format)
