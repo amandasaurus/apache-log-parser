@@ -25,5 +25,6 @@ Example:
      'time_recieved': '[16/Aug/2013:15:45:34 +0000]',
      'time_us': '1966093'}
     
+The version numbers follow [Semantic Versioning](http://semver.org/).
 
 This package is © 2013 Rory McCann, released under the terms of the GNU GPL v3 (or at your option a later version)
