@@ -13,7 +13,11 @@ class ApacheLogParserTestCase(unittest.TestCase):
         self.assertEqual(log_data['request_first_line'], 'GET / HTTP/1.1')
         self.assertEqual(log_data['request_method'], 'GET')
         self.assertEqual(log_data['request_url'], '/')
-        
+
+        self.assertEqual(log_data['request_header_user_agent'], 'Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.18)')
+
+        self.assertEqual(log_data['request_header_user_agent__os__family'], 'Linux')
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -51,7 +51,15 @@ def extra_request_from_first_line(matched_strings):
 
 def parse_user_agent(matched_strings):
     if has_user_agents:
-        pass
+        ua = matched_strings['request_header_user_agent']
+        parsed_ua = user_agents.parse(ua)
+        matched_strings.update({
+            'request_header_user_agent__browser__family': parsed_ua.browser.family,
+            'request_header_user_agent__browser__version_string': parsed_ua.browser.version_string,
+            'request_header_user_agent__os__family': parsed_ua.os.family,
+            'request_header_user_agent__os__version_string': parsed_ua.os.version_string,
+            'request_header_user_agent__is_mobile': parsed_ua.is_mobile,
+        })
     else:
         pass
 
