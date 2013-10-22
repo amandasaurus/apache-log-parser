@@ -1,11 +1,7 @@
 import re
 from datetime import datetime
 
-try:
-    import user_agents
-    has_user_agents = True
-except ImportError:
-    has_user_agents = False
+import user_agents
 
 class ApacheLogParserException(Exception): pass
 
@@ -50,18 +46,15 @@ def extra_request_from_first_line(matched_strings):
     return results
 
 def parse_user_agent(matched_strings):
-    if has_user_agents:
-        ua = matched_strings['request_header_user_agent']
-        parsed_ua = user_agents.parse(ua)
-        matched_strings.update({
-            'request_header_user_agent__browser__family': parsed_ua.browser.family,
-            'request_header_user_agent__browser__version_string': parsed_ua.browser.version_string,
-            'request_header_user_agent__os__family': parsed_ua.os.family,
-            'request_header_user_agent__os__version_string': parsed_ua.os.version_string,
-            'request_header_user_agent__is_mobile': parsed_ua.is_mobile,
-        })
-    else:
-        pass
+    ua = matched_strings['request_header_user_agent']
+    parsed_ua = user_agents.parse(ua)
+    matched_strings.update({
+        'request_header_user_agent__browser__family': parsed_ua.browser.family,
+        'request_header_user_agent__browser__version_string': parsed_ua.browser.version_string,
+        'request_header_user_agent__os__family': parsed_ua.os.family,
+        'request_header_user_agent__os__version_string': parsed_ua.os.version_string,
+        'request_header_user_agent__is_mobile': parsed_ua.is_mobile,
+    })
 
     return matched_strings
 
