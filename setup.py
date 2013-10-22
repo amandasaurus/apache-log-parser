@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name="apache-log-parser",
-      version="1.1.0",
+      version="1.2.0",
       author="Rory McCann",
       author_email="rory@technomancy.org",
       packages=['apache_log_parser'],
