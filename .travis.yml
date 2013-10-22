@@ -6,6 +6,6 @@ install:
     - pip install coveralls --use-mirrors
 # command to run tests
 script:
-  coverage run --source=apache_log_parser manage.py test
+  coverage run --source=apache_log_parser setup.py test
 after_success:
   coveralls
