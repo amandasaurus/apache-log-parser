@@ -1,5 +1,7 @@
 Parses log lines from an apache log file in (almost) any format possible
 
+[![Build Status](https://travis-ci.org/rory/apache-log-parser.png?branch=master)](https://travis-ci.org/rory/apache-log-parser)
+
 Usage:
 
     import apache_log_parser
