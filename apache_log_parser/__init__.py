@@ -9,7 +9,7 @@ class LineDoesntMatchException(ApacheLogParserException):
     def __init__(self, log_line=None, regex=None, *args, **kwargs):
         self.log_line = log_line
         self.regex = regex
-    
+
     def __repr__(self):
         return u"LineDoesntMatchException(log_line={0!r}, regex={1!r})".format(self.log_line, self.regex)
 
@@ -65,7 +65,7 @@ def apachetime(s):
     Given a string representation of a datetime in apache format (e.g.
     "01/Sep/2012:06:05:11 +0000"), return the python datetime for that string
     """
-    month_map = {'Jan': 1, 'Feb': 2, 'Mar':3, 'Apr':4, 'May':5, 'Jun':6, 'Jul':7, 
+    month_map = {'Jan': 1, 'Feb': 2, 'Mar':3, 'Apr':4, 'May':5, 'Jun':6, 'Jul':7,
         'Aug':8,  'Sep': 9, 'Oct':10, 'Nov': 11, 'Dec': 12}
     s = s[1:-1]
     return datetime(int(s[7:11]), month_map[s[3:6]], int(s[0:2]), \
@@ -123,47 +123,54 @@ FORMAT_STRINGS = [
     [make_regex('%O'), '.*?', lambda match: 'bytes_tx', lambda matched_strings: matched_strings], #	Bytes sent, including headers, cannot be zero. You need to enable mod_logio to use this.
 ]
 
-def make_parser(format_string):
-    pattern = "("+"|".join(x[0] for x in FORMAT_STRINGS)+")"
-    parts = re.split(pattern, format_string)
+class Parser:
+    def __init__(self, format_string):
+        self.names = []
 
-    
-    functions_to_parse = {}
+        self.pattern = "("+"|".join(x[0] for x in FORMAT_STRINGS)+")"
+        self.parts = re.split(self.pattern, format_string)
 
-    log_line_regex = ""
-    while True:
-        if len(parts) == 0:
-            break
-        if len(parts) == 1:
-            raw, regex = parts.pop(0), None
-        elif len(parts) >= 2:
-            raw, regex = parts.pop(0), parts.pop(0)
-        if len(raw) > 0:
-            log_line_regex += re.escape(raw)
-        if regex is not None:
-            for format_spec in FORMAT_STRINGS:
-                pattern_regex, log_part_regex, name_func, values_func = format_spec
-                match = re.match("^"+pattern_regex+"$", regex)
-                if match:
-                    name = name_func(match.group())
-                    functions_to_parse[name] = values_func
-                    log_line_regex += "(?P<"+name+">"+log_part_regex+")"
-                    break
+        self.functions_to_parse = {}
 
-    log_line_regex = re.compile(log_line_regex)
+        self.log_line_regex = ""
+        while True:
+            if len(self.parts) == 0:
+                break
+            if len(self.parts) == 1:
+                raw, regex = self.parts.pop(0), None
+            elif len(self.parts) >= 2:
+                raw, regex = self.parts.pop(0), self.parts.pop(0)
+            if len(raw) > 0:
+                self.log_line_regex += re.escape(raw)
+            if regex is not None:
+                for format_spec in FORMAT_STRINGS:
+                    pattern_regex, log_part_regex, name_func, values_func = format_spec
+                    match = re.match("^"+pattern_regex+"$", regex)
+                    if match:
+                        name = name_func(match.group())
+                        self.names.append(name)
+                        self.functions_to_parse[name] = values_func
+                        self.log_line_regex += "(?P<"+name+">"+log_part_regex+")"
+                        break
 
-    def matcher(log_line):
-        match = log_line_regex.match(log_line)
+        self.log_line_regex = re.compile(self.log_line_regex)
+        self.names = tuple(self.names)
+
+    def parse(self, log_line):
+        match = self.log_line_regex.match(log_line)
         if match is None:
-            raise LineDoesntMatchException(log_line=log_line, regex=log_line_regex.pattern)
+            raise LineDoesntMatchException(log_line=log_line, regex=self.log_line_regex.pattern)
         else:
             results = {}
-            for name in functions_to_parse:
+            for name in self.functions_to_parse:
                 values = {name: match.groupdict()[name]}
-                values = functions_to_parse[name](values)
+                values = self.functions_to_parse[name](values)
                 results.update(values)
-
             return results
-    return matcher
-    
 
+
+def make_parser(format_string):
+    return Parser(format_string).parse
+
+def get_fieldnames(format_string):
+    return Parser(format_string).names
