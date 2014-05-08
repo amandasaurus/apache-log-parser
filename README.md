@@ -24,7 +24,7 @@ Example:
      'request_header_user_agent': 'Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.18)',
      'response_bytes_clf': '3478',
      'status': '200',
-     'time_recieved': '[16/Aug/2013:15:45:34 +0000]',
+     'time_received': '[16/Aug/2013:15:45:34 +0000]',
      'time_us': '1966093'}
     
 The version numbers follow [Semantic Versioning](http://semver.org/).

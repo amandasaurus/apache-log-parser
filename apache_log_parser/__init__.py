@@ -72,9 +72,9 @@ def apachetime(s):
          int(s[12:14]), int(s[15:17]), int(s[18:20]))
 
 def format_time(matched_strings):
-    time_recieved = matched_strings['time_recieved']
-    obj = apachetime(time_recieved)
-    return {'time_recieved':time_recieved, 'time_recieved_datetimeobj': obj, 'time_recieved_isoformat': obj.isoformat()}
+    time_received = matched_strings['time_received']
+    obj = apachetime(time_received)
+    return {'time_received':time_received, 'time_received_datetimeobj': obj, 'time_received_isoformat': obj.isoformat()}
 
 
 FORMAT_STRINGS = [
@@ -107,7 +107,7 @@ FORMAT_STRINGS = [
     [make_regex('%r'), '.*?', lambda match: 'request_first_line', extra_request_from_first_line], #	First line of request
     [make_regex('%R'), '.*?', lambda match: 'handler', lambda matched_strings: matched_strings], #	The handler generating the response (if any).
     [make_regex('%s'), '[0-9]+?', lambda match: 'status', lambda matched_strings: matched_strings], #	Status. For requests that got internally redirected, this is the status of the *original* request --- %>s for the last.
-    [make_regex('%t'), '.*?', lambda match: 'time_recieved', format_time], #	Time the request was received (standard english format)
+    [make_regex('%t'), '.*?', lambda match: 'time_received', format_time], #	Time the request was received (standard english format)
     [make_regex('%\{[^\]]+?\}t'), '.*?', extract_inner_value("time_", "t") , lambda matched_strings: matched_strings], #	The time, in the form given by format, which should be in strftime(3) format. (potentially localized)
     [make_regex('%T'), '.*?', lambda match: 'time_s', lambda matched_strings: matched_strings], #	The time taken to serve the request, in seconds.
     [make_regex('%u'), '.*?', lambda match: 'remote_user', lambda matched_strings: matched_strings], #	Remote user (from auth; may be bogus if return status (%s) is 401)
