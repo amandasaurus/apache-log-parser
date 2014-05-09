@@ -20,7 +20,7 @@ class ApacheLogParserTestCase(unittest.TestCase):
 
         self.assertEqual(log_data['request_header_user_agent__os__family'], 'Linux')
 
-        self.assertEqual(apache_log_parser.get_fieldnames(format_string), ('remote_host', 'pid', 'time_recieved', 'time_us', 'request_first_line', 'status', 'response_bytes_clf', 'request_header_referer', 'request_header_user_agent', 'remote_logname', 'remote_user'))
+        self.assertEqual(apache_log_parser.get_fieldnames(format_string), ('remote_host', 'pid', 'time_received', 'time_us', 'request_first_line', 'status', 'response_bytes_clf', 'request_header_referer', 'request_header_user_agent', 'remote_logname', 'remote_user'))
 
 if __name__ == '__main__':
     unittest.main()
