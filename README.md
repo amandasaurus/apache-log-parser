@@ -5,7 +5,7 @@ Parses log lines from an apache log file in (almost) any format possible
 Usage:
 
     import apache_log_parser
-    line_parser = apache_log_parser.parser("%v %h %l %u %t \"%r\" %>s %b")
+    line_parser = apache_log_parser.make_parser("%v %h %l %u %t \"%r\" %>s %b")
 
 This creates & returns a function, ``line_parser``, which accepts a line from an apache log file in that format, and will return the parsed values in a dictionary.
 
