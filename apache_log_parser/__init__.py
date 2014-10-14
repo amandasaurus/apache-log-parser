@@ -67,7 +67,7 @@ def apachetime(s):
     """
     month_map = {'Jan': 1, 'Feb': 2, 'Mar':3, 'Apr':4, 'May':5, 'Jun':6, 'Jul':7,
         'Aug':8,  'Sep': 9, 'Oct':10, 'Nov': 11, 'Dec': 12}
-    s = s[1:-1]
+    s = s[s.find('[')+1:-1]
     return datetime(int(s[7:11]), month_map[s[3:6]], int(s[0:2]), \
          int(s[12:14]), int(s[15:17]), int(s[18:20]))
 
