@@ -79,36 +79,37 @@ def format_time(matched_strings):
 
 FORMAT_STRINGS = [
     ['%%', '%', lambda match: '', lambda matched_strings: matched_strings],
-    [make_regex('%a'), '\d{,3}(.\d{\3}){3}', lambda match: 'remote_ip', lambda matched_strings: matched_strings], #	Remote IP-address
-    [make_regex('%A'), '\d{,3}(.\d{\3}){3}', lambda match: 'local_ip', lambda matched_strings: matched_strings], #	Local IP-address
+    [make_regex('%a'), '(?:\d{1,3}\.){3}\d{1,3}', lambda match: 'remote_ip', lambda matched_strings: matched_strings], #	Remote IP-address
+    [make_regex('%A'), '(?:\d{1,3}\.){3}\d{1,3}', lambda match: 'local_ip', lambda matched_strings: matched_strings], #	Local IP-address
     [make_regex('%B'), '(\d+|-)', lambda match: 'response_bytes', lambda matched_strings: matched_strings], #	Size of response in bytes, excluding HTTP headers.
     [make_regex('%b'), '(\d+|-)', lambda match: 'response_bytes_clf', lambda matched_strings: matched_strings], #	Size of response in bytes, excluding HTTP headers. In CLF format, i.e. a '-' rather than a 0 when no bytes are sent.
-    [make_regex('%\{[^\]]+?\}C'), '.*?', extract_inner_value("cookie_", "C") , lambda matched_strings: matched_strings], #	The contents of cookie Foobar in the request sent to the server. Only version 0 cookies are fully supported.
+    [make_regex('%\{[^\}]+?\}C'), '.*?', extract_inner_value("cookie_", "C") , lambda matched_strings: matched_strings], #	The contents of cookie Foobar in the request sent to the server. Only version 0 cookies are fully supported.
     [make_regex('%D'), '-?\d+', lambda match: 'time_us', lambda matched_strings: matched_strings], #	The time taken to serve the request, in microseconds.
-    [make_regex('%\{[^\}]+?\}e'), '.*?', 'env', lambda matched_strings: matched_strings], #	The contents of the environment variable FOOBAR
+    [make_regex('%\{[^\}]+?\}e'), '.*?', extract_inner_value("env_", "e"), lambda matched_strings: matched_strings], #	The contents of the environment variable FOOBAR
     [make_regex('%f'), '.*?', lambda match: 'filename', lambda matched_strings: matched_strings], #	Filename
     [make_regex('%h'), '.*?', lambda match: 'remote_host', lambda matched_strings: matched_strings], #	Remote host
     [make_regex('%H'), '.*?', lambda match: 'protocol', lambda matched_strings: matched_strings], #	The request protocol
 
     # Special case of below, for matching just user agent
     [make_regex('%\{User-Agent\}i'), '.*?', lambda match: "request_header_user_agent" , parse_user_agent],
-    [make_regex('%\{[^\]]+?\}i'), '.*?', extract_inner_value("request_header_", "i") , lambda matched_strings: matched_strings], #	The contents of Foobar: header line(s) in the request sent to the server. Changes made by other modules (e.g. mod_headers) affect this. If you're interested in what the request header was prior to when most modules would have modified it, use mod_setenvif to copy the header into an internal environment variable and log that value with the %\{VARNAME}e described above.
+    [make_regex('%\{[^\}]+?\}i'), '.*?', extract_inner_value("request_header_", "i") , lambda matched_strings: matched_strings], #	The contents of Foobar: header line(s) in the request sent to the server. Changes made by other modules (e.g. mod_headers) affect this. If you're interested in what the request header was prior to when most modules would have modified it, use mod_setenvif to copy the header into an internal environment variable and log that value with the %\{VARNAME}e described above.
 
     [make_regex('%k'), '.*?', lambda match: 'num_keepalives', lambda matched_strings: matched_strings], #	Number of keepalive requests handled on this connection. Interesting if KeepAlive is being used, so that, for example, a '1' means the first keepalive request after the initial one, '2' the second, etc...; otherwise this is always 0 (indicating the initial request). Available in versions 2.2.11 and later.
     [make_regex('%l'), '.*?', lambda match: 'remote_logname', lambda matched_strings: matched_strings], #	Remote logname (from identd, if supplied). This will return a dash unless mod_ident is present and IdentityCheck is set On.
     [make_regex('%m'), '.*?', lambda match: 'method', lambda matched_strings: matched_strings], #	The request method
-    [make_regex('%\{[^\]]+?\}n'), '.*?', extract_inner_value("note_", "n") , lambda matched_strings: matched_strings], #	The contents of note Foobar from another module.
-    [make_regex('%\{[^\]]+?\}o'), '.*?',extract_inner_value("response_header_", "o") , lambda matched_strings: matched_strings], #	The contents of Foobar: header line(s) in the reply.
+    [make_regex('%\{[^\}]+?\}n'), '.*?', extract_inner_value("note_", "n") , lambda matched_strings: matched_strings], #	The contents of note Foobar from another module.
+    [make_regex('%\{[^\}]+?\}o'), '.*?',extract_inner_value("response_header_", "o") , lambda matched_strings: matched_strings], #	The contents of Foobar: header line(s) in the reply.
     [make_regex('%p'), '.*?', lambda match: 'server_port', lambda matched_strings: matched_strings], #	The canonical port of the server serving the request
-    [make_regex('%\{[^\]]+?\}p'), '.*?', extract_inner_value("server_port_", "p") , lambda matched_strings: matched_strings], #	The canonical port of the server serving the request or the server's actual port or the client's actual port. Valid formats are canonical, local, or remote.
+    [make_regex('%\{[^\}]+?\}p'), '.*?', extract_inner_value("server_port_", "p") , lambda matched_strings: matched_strings], #	The canonical port of the server serving the request or the server's actual port or the client's actual port. Valid formats are canonical, local, or remote.
     [make_regex('%P'), '.*?', lambda match: 'pid', lambda matched_strings: matched_strings], #	The process ID of the child that serviced the request.
-    [make_regex('%\{[^\]]+?\}P'), '.*?', extract_inner_value("pid_", "P") , lambda matched_strings: matched_strings], #	The process ID or thread id of the child that serviced the request. Valid formats are pid, tid, and hextid. hextid requires APR 1.2.0 or higher.
+    [make_regex('%\{[^\}]+?\}P'), '.*?', extract_inner_value("pid_", "P") , lambda matched_strings: matched_strings], #	The process ID or thread id of the child that serviced the request. Valid formats are pid, tid, and hextid. hextid requires APR 1.2.0 or higher.
     [make_regex('%q'), '.*?', lambda match: 'query_string' , lambda matched_strings: matched_strings], #	The query string (prepended with a ? if a query string exists, otherwise an empty string)
     [make_regex('%r'), '.*?', lambda match: 'request_first_line', extra_request_from_first_line], #	First line of request
     [make_regex('%R'), '.*?', lambda match: 'handler', lambda matched_strings: matched_strings], #	The handler generating the response (if any).
     [make_regex('%s'), '[0-9]+?', lambda match: 'status', lambda matched_strings: matched_strings], #	Status. For requests that got internally redirected, this is the status of the *original* request --- %>s for the last.
     [make_regex('%t'), '.*?', lambda match: 'time_received', format_time], #	Time the request was received (standard english format)
-    [make_regex('%\{[^\]]+?\}t'), '.*?', extract_inner_value("time_", "t") , lambda matched_strings: matched_strings], #	The time, in the form given by format, which should be in strftime(3) format. (potentially localized)
+    [make_regex('%\{[^\}]+?\}t'), '.*?', extract_inner_value("time_", "t") , lambda matched_strings: matched_strings], #	The time, in the form given by format, which should be in strftime(3) format. (potentially localized)
+    [make_regex('%\{[^\}]+?\}x'), '.*?', extract_inner_value("extension_", "x") , lambda matched_strings: matched_strings], # Extension value, e.g. mod_ssl protocol and cipher
     [make_regex('%T'), '.*?', lambda match: 'time_s', lambda matched_strings: matched_strings], #	The time taken to serve the request, in seconds.
     [make_regex('%u'), '.*?', lambda match: 'remote_user', lambda matched_strings: matched_strings], #	Remote user (from auth; may be bogus if return status (%s) is 401)
     [make_regex('%U'), '.*?', lambda match: 'url_path' , lambda matched_strings: matched_strings], #	The URL path requested, not including any query string.
