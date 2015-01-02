@@ -2,8 +2,10 @@
 
 from setuptools import setup
 
+exec(open("./apache_log_parser/_version.py").read())
+
 setup(name="apache-log-parser",
-      version="1.4.0",
+      version=__version__,
       author="Rory McCann",
       author_email="rory@technomancy.org",
       packages=['apache_log_parser'],
