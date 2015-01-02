@@ -1,0 +1,24 @@
+[bumpr]
+file = apache_log_parser/_version.py
+vcs = git
+tests = tox
+publish = python setup.py register sdist upload
+clean =
+    python setup.py clean
+    rm -rf *egg-info build dist
+files = README.rst
+
+[bump]
+message = Commit version {version}
+
+[prepare]
+suffix = dev
+message = Prepare version {version} for next development cycle
+
+[changelog]
+file = CHANGELOG.rst
+bump = {version} ({date:%Y-%m-%d})
+prepare = In development
+
+[readthedoc]
+id = bumpr
