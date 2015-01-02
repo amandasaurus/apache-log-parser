@@ -6,7 +6,7 @@ publish = python setup.py register sdist upload
 clean =
     python setup.py clean
     rm -rf *egg-info build dist
-files = README.rst
+files = README.md
 
 [bump]
 message = Commit version {version}
