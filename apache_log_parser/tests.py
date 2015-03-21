@@ -42,6 +42,10 @@ class ApacheLogParserTestCase(unittest.TestCase):
             'time_received_datetimeobj': datetime.datetime(2014, 11, 28, 10, 3, 40),
             'time_received_isoformat': '2014-11-28T10:03:40', 'remote_host': '127.0.0.1',
             'time_received': '[28/Nov/2014:10:03:40 +0000]',
+            'time_received_tz_datetimeobj': datetime.datetime(2014, 11, 28, 10, 3, 40, tzinfo=apache_log_parser.FixedOffset("0000")),
+            'time_received_tz_isoformat': '2014-11-28T10:03:40+00:00', 'remote_host': '127.0.0.1',
+            'time_received_utc_datetimeobj': datetime.datetime(2014, 11, 28, 10, 3, 40, tzinfo=apache_log_parser.FixedOffset("0000")),
+            'time_received_utc_isoformat': '2014-11-28T10:03:40+00:00', 'remote_host': '127.0.0.1',
             'extension_ssl_cipher': 'MY-CYPHER',
         })
 
@@ -77,6 +81,10 @@ class ApacheLogParserTestCase(unittest.TestCase):
             'time_received': '[08/Mar/2015:18:06:58 -0400]',
             'time_received_datetimeobj': datetime.datetime(2015, 3, 8, 18, 6, 58),
             'time_received_isoformat': '2015-03-08T18:06:58',
+            'time_received_tz_datetimeobj': datetime.datetime(2015, 3, 8, 18, 6, 58, tzinfo=apache_log_parser.FixedOffset('-0400')),
+            'time_received_tz_isoformat': '2015-03-08T18:06:58-04:00',
+            'time_received_utc_datetimeobj': datetime.datetime(2015, 3, 8, 22, 6, 58, tzinfo=apache_log_parser.FixedOffset('0000')),
+            'time_received_utc_isoformat': '2015-03-08T22:06:58+00:00',
         })
 
 if __name__ == '__main__':
