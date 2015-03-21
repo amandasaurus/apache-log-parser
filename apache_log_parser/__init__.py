@@ -107,7 +107,7 @@ FORMAT_STRINGS = [
     [make_regex('%r'), '.*?', lambda match: 'request_first_line', extra_request_from_first_line], #	First line of request
     [make_regex('%R'), '.*?', lambda match: 'handler', lambda matched_strings: matched_strings], #	The handler generating the response (if any).
     [make_regex('%s'), '[0-9]+?', lambda match: 'status', lambda matched_strings: matched_strings], #	Status. For requests that got internally redirected, this is the status of the *original* request --- %>s for the last.
-    [make_regex('%t'), '.*?', lambda match: 'time_received', format_time], #	Time the request was received (standard english format)
+    [make_regex('%t'), '\[.*?\]', lambda match: 'time_received', format_time], #	Time the request was received (standard english format)
     [make_regex('%\{[^\}]+?\}t'), '.*?', extract_inner_value("time_", "t") , lambda matched_strings: matched_strings], #	The time, in the form given by format, which should be in strftime(3) format. (potentially localized)
     [make_regex('%\{[^\}]+?\}x'), '.*?', extract_inner_value("extension_", "x") , lambda matched_strings: matched_strings], # Extension value, e.g. mod_ssl protocol and cipher
     [make_regex('%T'), '.*?', lambda match: 'time_s', lambda matched_strings: matched_strings], #	The time taken to serve the request, in seconds.
