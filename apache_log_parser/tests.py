@@ -38,10 +38,12 @@ class ApacheLogParserTestCase(unittest.TestCase):
             'request_header_user_agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36',
             'note_number': '0', 'request_header_user_agent__os__version_string': '',
             'server_port_local': '443', 'request_method': 'GET',
-            'time_received_datetimeobj': datetime.datetime(2014, 11, 28, 10, 3, 40),
             'server_port_remote': '50153', 'env_unique_id': 'VHhIfKwQGCMAAEiMUIAAAAF',
+            'time_received_datetimeobj': datetime.datetime(2014, 11, 28, 10, 3, 40),
             'time_received_isoformat': '2014-11-28T10:03:40', 'remote_host': '127.0.0.1',
-            'extension_ssl_cipher': 'MY-CYPHER', 'time_received': '[28/Nov/2014:10:03:40 +0000]'})
+            'time_received': '[28/Nov/2014:10:03:40 +0000]',
+            'extension_ssl_cipher': 'MY-CYPHER',
+        })
 
         parser = apache_log_parser.make_parser('%A %V %p %P %a \"%r\" \"%{main_call}n\" %{some_time}t %b %>s %D %{UNIQUE_ID}e ')
         data = parser('127.0.0.1 othersite 80 25572 192.168.1.100 "GET /Class/method/ HTTP/1.1" "-" 20141128155031 2266 200 10991 VHiZx6wQGCMAAEiBE8kAAAAA:VHiZx6wQGiMAAGPkBnMAAAAH:VHiZx6wQGiMAAGPkBnMAAAAH ')
