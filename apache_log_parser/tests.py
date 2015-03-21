@@ -4,6 +4,8 @@ import apache_log_parser
 import datetime
 
 class ApacheLogParserTestCase(unittest.TestCase):
+    maxDiff = None
+
     def test_simple(self):
         format_string = "%h <<%P>> %t %Dus \"%r\" %>s %b  \"%{Referer}i\" \"%{User-Agent}i\" %l %u"
         parser = apache_log_parser.make_parser(format_string)
