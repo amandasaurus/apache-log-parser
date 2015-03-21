@@ -68,13 +68,13 @@ class ApacheLogParserTestCase(unittest.TestCase):
             'request_first_line': 'GET /content_images/3/American-University-in-Cairo-AUC.jpeg.jpg HTTP/1.1',
             'remote_logname': '-',
             'request_method': 'GET',
-            'time_received_datetimeobj': datetime.datetime(2015, 3, 8, 18, 6, 58),
             'response_bytes_clf': '344',
             'server_name2': 'blah.foo.com',
             'request_url': '/content_images/3/American-University-in-Cairo-AUC.jpeg.jpg',
-            'time_received_isoformat': '2015-03-08T18:06:58',
             'remote_host': '10.1.1.1',
-            'time_received': '[08/Mar/2015:18:06:58 -0400]'
+            'time_received': '[08/Mar/2015:18:06:58 -0400]',
+            'time_received_datetimeobj': datetime.datetime(2015, 3, 8, 18, 6, 58),
+            'time_received_isoformat': '2015-03-08T18:06:58',
         })
 
 if __name__ == '__main__':
