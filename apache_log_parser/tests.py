@@ -87,5 +87,14 @@ class ApacheLogParserTestCase(unittest.TestCase):
             'time_received_utc_isoformat': '2015-03-08T22:06:58+00:00',
         })
 
+    def test_issue11(self):
+        format_string = "%h <<%P>> %t %Dus \"%r\" %>s %b  \"%{Referer}i\" \"%{User-Agent}i\" %l %u"
+        parser = apache_log_parser.make_parser(format_string)
+        sample = '127.0.0.1 <<6113>> [16/Aug/2013:15:45:34 +0000] 1966093us "DELETE / HTTP/1.1" 200 3478  "https://example.com/" "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.18)" - -'
+        log_data = parser(sample)
+        self.assertNotEqual(log_data, None)
+        self.assertEqual(log_data['request_first_line'], 'DELETE / HTTP/1.1')
+        self.assertEqual(log_data['request_method'], 'DELETE')
+
 if __name__ == '__main__':
     unittest.main()

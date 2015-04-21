@@ -37,7 +37,7 @@ def make_regex(format_template):
 
 def extra_request_from_first_line(matched_strings):
     first_line = matched_strings['request_first_line']
-    match = re.match("^(?P<method>GET|HEAD|POST|OPTIONS|PUT|CONNECT|PATCH|PROPFIND)\s?(?P<url>.{,10000}?)(\s+HTTP/(?P<http_ver>1.[01]))?$", first_line)
+    match = re.match("^(?P<method>GET|HEAD|POST|OPTIONS|PUT|CONNECT|PATCH|PROPFIND|DELETE)\s?(?P<url>.{,10000}?)(\s+HTTP/(?P<http_ver>1.[01]))?$", first_line)
     if match is None:
         # Possibly garbage, ignore it
         results = { 'request_first_line': first_line, 'request_method': '', 'request_url': '', 'request_http_ver': ''}
