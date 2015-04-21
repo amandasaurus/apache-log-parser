@@ -87,6 +87,24 @@ class ApacheLogParserTestCase(unittest.TestCase):
             'time_received_utc_isoformat': '2015-03-08T22:06:58+00:00',
         })
 
+    def test_issue10_host(self):
+        # hostname lookup should work
+        format_string = "%h %l %u %t \"%r\" %>s %b"
+        parser = apache_log_parser.make_parser(format_string)
+        sample = '2001:0db8:85a3:0000:0000:8a2e:0370:7334 - frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326'
+        log_data = parser(sample)
+        self.assertNotEqual(log_data, None)
+        self.assertEqual(log_data['remote_host'], '2001:0db8:85a3:0000:0000:8a2e:0370:7334')
+
+    def test_issue10_ip(self):
+        # remote ip address should work
+        format_string = "%a %l %u %t \"%r\" %>s %b"
+        parser = apache_log_parser.make_parser(format_string)
+        sample = '2001:0db8:85a3:0000:0000:8a2e:0370:7334 - frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326'
+        log_data = parser(sample)
+        self.assertNotEqual(log_data, None)
+        self.assertEqual(log_data['remote_ip'], '2001:0db8:85a3:0000:0000:8a2e:0370:7334')
+
     def test_issue11(self):
         format_string = "%h <<%P>> %t %Dus \"%r\" %>s %b  \"%{Referer}i\" \"%{User-Agent}i\" %l %u"
         parser = apache_log_parser.make_parser(format_string)

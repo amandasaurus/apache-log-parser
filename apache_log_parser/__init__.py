@@ -134,11 +134,14 @@ def format_time(matched_strings):
         'time_received_utc_datetimeobj': utc_obj, 'time_received_utc_isoformat': utc_obj.isoformat(),
     }
 
+IPv4_ADDR_REGEX = '(?:\d{1,3}\.){3}\d{1,3}'
+IPv6_ADDR_REGEX = r"([0-9A-Fa-f]{0,4}:){2,7}([0-9A-Fa-f]{1,4}|("+IPv4_ADDR_REGEX+"))"
+IP_ADDR_REGEX = "("+IPv4_ADDR_REGEX+"|"+IPv6_ADDR_REGEX+")"
 
 FORMAT_STRINGS = [
     ['%%', '%', lambda match: '', lambda matched_strings: matched_strings],
-    [make_regex('%a'), '(?:\d{1,3}\.){3}\d{1,3}', lambda match: 'remote_ip', lambda matched_strings: matched_strings], #	Remote IP-address
-    [make_regex('%A'), '(?:\d{1,3}\.){3}\d{1,3}', lambda match: 'local_ip', lambda matched_strings: matched_strings], #	Local IP-address
+    [make_regex('%a'), IP_ADDR_REGEX, lambda match: 'remote_ip', lambda matched_strings: matched_strings], #	Remote IP-address
+    [make_regex('%A'), IP_ADDR_REGEX, lambda match: 'local_ip', lambda matched_strings: matched_strings], #	Local IP-address
     [make_regex('%B'), '(\d+|-)', lambda match: 'response_bytes', lambda matched_strings: matched_strings], #	Size of response in bytes, excluding HTTP headers.
     [make_regex('%b'), '(\d+|-)', lambda match: 'response_bytes_clf', lambda matched_strings: matched_strings], #	Size of response in bytes, excluding HTTP headers. In CLF format, i.e. a '-' rather than a 0 when no bytes are sent.
     [make_regex('%\{[^\}]+?\}C'), '.*?', extract_inner_value("cookie_", "C") , lambda matched_strings: matched_strings], #	The contents of cookie Foobar in the request sent to the server. Only version 0 cookies are fully supported.
