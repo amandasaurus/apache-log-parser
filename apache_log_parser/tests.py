@@ -114,5 +114,16 @@ class ApacheLogParserTestCase(unittest.TestCase):
         self.assertEqual(log_data['request_first_line'], 'DELETE / HTTP/1.1')
         self.assertEqual(log_data['request_method'], 'DELETE')
 
+    def test_issue12_nonnum_status(self):
+        # In case status is - as opposed to a number
+        format_string = "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\""
+        parser = apache_log_parser.make_parser(format_string)
+        sample1 = '002:52ee:xxxx::x - - [11/Jun/2014:22:55:45 +0000] "GET /X230_2.51_g2uj10us.iso HTTP/1.1" - 3414853 "refer" "Mozilla/5.0 (X11; Linux x86_64; rv:29.0) Gecko/20100101 Firefox/29.0"'
+
+        log_data1 = parser(sample1)
+        self.assertNotEqual(log_data1, None)
+        self.assertEqual(log_data1['status'], '-')
+
+
 if __name__ == '__main__':
     unittest.main()
