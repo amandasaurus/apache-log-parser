@@ -49,6 +49,8 @@ Example
      'time_received_utc_isoformat': '2013-08-16T15:45:34+00:00',
      'time_us': '1966093'}
 
+There is a at least one key/value in the returned dictionary for each apache log placeholder. Some have more than one (e.g. all the `time_received*`).
+
 The version numbers follow [Semantic Versioning](http://semver.org/).
 
 Copyright
