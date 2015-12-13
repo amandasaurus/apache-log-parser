@@ -2,6 +2,8 @@
 import unittest
 import apache_log_parser
 import datetime
+import doctest
+import os.path
 
 class ApacheLogParserTestCase(unittest.TestCase):
     maxDiff = None
@@ -128,6 +130,10 @@ class ApacheLogParserTestCase(unittest.TestCase):
         parser = apache_log_parser.make_parser("%h %a %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"")
         sample1 = '10.178.98.112 2607:5300:60:2c74:: - - [24/Mar/2015:16:40:45 -0400] "GET /category/blog/page/3 HTTP/1.0" 200 41207 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.30 (KHTML, like Gecko) Ubuntu/10.10 Chromium/12.0.742.112 Chrome/12.0.742.112 Safari/534.30"'
         log_data1 = parser(sample1)
+
+    def test_doctest_readme(self):
+        doctest.testfile("../README.md")
+
 
 
 if __name__ == '__main__':
