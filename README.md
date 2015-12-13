@@ -2,14 +2,21 @@ Parses log lines from an apache log file in (almost) any format possible
 
 [![Build Status](https://travis-ci.org/rory/apache-log-parser.png?branch=master)](https://travis-ci.org/rory/apache-log-parser)
 
-Usage:
+Installation
+============
+
+    pip install apache-log-parser
+
+Usage
+=====
 
     import apache_log_parser
     line_parser = apache_log_parser.make_parser("%v %h %l %u %t \"%r\" %>s %b")
 
 This creates & returns a function, ``line_parser``, which accepts a line from an apache log file in that format, and will return the parsed values in a dictionary.
 
-Example:
+Example
+=======
 
     >>> import apache_log_parser
     >>> line_parser = apache_log_parser.make_parser("%h <<%P>> %t %Dus \"%r\" %>s %b  \"%{Referer}i\" \"%{User-Agent}i\" %l %u")
@@ -29,7 +36,10 @@ Example:
     
 The version numbers follow [Semantic Versioning](http://semver.org/).
 
-This package is © 2013 Rory McCann, released under the terms of the GNU GPL v3 (or at your option a later version)
+Copyright
+=========
+
+This package is © 2013-2015 Rory McCann, released under the terms of the GNU GPL v3 (or at your option a later version). If you'd like a different licence, please email <rory@technomancy.org>
 
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/rory/apache-log-parser/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
