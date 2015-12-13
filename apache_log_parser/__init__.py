@@ -135,7 +135,7 @@ def format_time(matched_strings):
     }
 
 IPv4_ADDR_REGEX = '(?:\d{1,3}\.){3}\d{1,3}'
-IPv6_ADDR_REGEX = r"([0-9A-Fa-f]{0,4}:){2,7}([0-9A-Fa-f]{1,4}|("+IPv4_ADDR_REGEX+"))"
+IPv6_ADDR_REGEX = "([0-9A-Fa-f]{0,4}:){2,7}([0-9A-Fa-f]{0,4})"
 IP_ADDR_REGEX = "("+IPv4_ADDR_REGEX+"|"+IPv6_ADDR_REGEX+")"
 
 FORMAT_STRINGS = [
