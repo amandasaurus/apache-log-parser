@@ -74,7 +74,7 @@ class FixedOffset(tzinfo):
             string = string
 
         hr_offset = int(string[0:2], 10)
-        min_offset = int(string[2:3], 10)
+        min_offset = int(string[2:4], 10)
         min_offset = hr_offset * 60 + min_offset
         min_offset = direction * min_offset
 
