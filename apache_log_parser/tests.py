@@ -42,10 +42,10 @@ class ApacheLogParserTestCase(unittest.TestCase):
             'server_port_local': '443', 'request_method': 'GET',
             'server_port_remote': '50153', 'env_unique_id': 'VHhIfKwQGCMAAEiMUIAAAAF',
             'time_received_datetimeobj': datetime.datetime(2014, 11, 28, 10, 3, 40),
-            'time_received_isoformat': '2014-11-28T10:03:40', 'remote_host': '127.0.0.1',
+            'time_received_isoformat': '2014-11-28T10:03:40',
             'time_received': '[28/Nov/2014:10:03:40 +0000]',
             'time_received_tz_datetimeobj': datetime.datetime(2014, 11, 28, 10, 3, 40, tzinfo=apache_log_parser.FixedOffset("0000")),
-            'time_received_tz_isoformat': '2014-11-28T10:03:40+00:00', 'remote_host': '127.0.0.1',
+            'time_received_tz_isoformat': '2014-11-28T10:03:40+00:00',
             'time_received_utc_datetimeobj': datetime.datetime(2014, 11, 28, 10, 3, 40, tzinfo=apache_log_parser.FixedOffset("0000")),
             'time_received_utc_isoformat': '2014-11-28T10:03:40+00:00', 'remote_host': '127.0.0.1',
             'extension_ssl_cipher': 'MY-CYPHER',
@@ -134,6 +134,20 @@ class ApacheLogParserTestCase(unittest.TestCase):
     def test_doctest_readme(self):
         doctest.testfile("../README.md")
 
+    def test_timezone_issue(self):
+        parser = apache_log_parser.Parser("%t")
+        log = "[08/Mar/2015:18:06:58 -0435]"
+        data = parser.parse(log)
+        self.assertEqual(data, {
+            'time_received': '[08/Mar/2015:18:06:58 -0435]',
+            'time_received_datetimeobj': datetime.datetime(2015, 3, 8, 18, 6, 58),
+            'time_received_isoformat': '2015-03-08T18:06:58',
+            'time_received_tz_datetimeobj': datetime.datetime(2015, 3, 8, 18, 6, 58, tzinfo=apache_log_parser.FixedOffset('-0435')),
+
+            'time_received_tz_isoformat': '2015-03-08T18:06:58-04:35',
+            'time_received_utc_datetimeobj': datetime.datetime(2015, 3, 8, 22, 41, 58, tzinfo=apache_log_parser.FixedOffset('0000')),
+            'time_received_utc_isoformat': '2015-03-08T22:41:58+00:00',
+        })
 
 
 if __name__ == '__main__':
