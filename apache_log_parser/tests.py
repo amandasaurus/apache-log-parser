@@ -131,6 +131,31 @@ class ApacheLogParserTestCase(unittest.TestCase):
         sample1 = '10.178.98.112 2607:5300:60:2c74:: - - [24/Mar/2015:16:40:45 -0400] "GET /category/blog/page/3 HTTP/1.0" 200 41207 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.30 (KHTML, like Gecko) Ubuntu/10.10 Chromium/12.0.742.112 Chrome/12.0.742.112 Safari/534.30"'
         log_data1 = parser(sample1)
 
+    def test_issue22_http2(self):
+        line_parser = apache_log_parser.make_parser("%h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"")
+        sample = '''137.226.113.25 - - [31/Dec/2017:03:14:19 +0100] "GET / HTTP/2" 200 0 "-" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0"'''
+        log_data = line_parser(sample)
+        expected_data = {'bytes_tx': '0',
+                         'remote_host': '137.226.113.25',
+                         'remote_logname': '-',
+                         'remote_user': '-',
+                         'request_first_line': 'GET / HTTP/2',
+                         'request_header_referer': '-',
+                         'request_header_user_agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; '
+                                                      'rv:50.0) Gecko/20100101 Firefox/50.0',
+                         'request_header_user_agent__browser__family': 'Firefox',
+                         'request_header_user_agent__browser__version_string': '50.0',
+                         'request_header_user_agent__is_mobile': False,
+                         'request_header_user_agent__os__family': 'Ubuntu',
+                         'request_header_user_agent__os__version_string': '',
+                         'request_http_ver': '2',
+                         'request_method': 'GET',
+                         'request_url': '/',
+                         'status': '200',
+                         'time_received': '[31/Dec/2017:03:14:19 +0100]'}
+        for k,v in expected_data.items():
+            self.assertEqual(log_data[k], v)
+
     def test_doctest_readme(self):
         doctest.testfile("../README.md")
 
