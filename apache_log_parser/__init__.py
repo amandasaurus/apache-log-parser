@@ -1,5 +1,6 @@
 import re
 from datetime import datetime, tzinfo, timedelta
+import sys
 
 import user_agents
 
@@ -220,6 +221,8 @@ class Parser:
         self.names = tuple(self.names)
 
     def parse(self, log_line):
+        if (sys.version_info.major > 2):
+            log_line = log_line.decode('utf-8')
         match = self.log_line_regex.match(log_line)
         if match is None:
             raise LineDoesntMatchException(log_line=log_line, regex=self.log_line_regex.pattern)
