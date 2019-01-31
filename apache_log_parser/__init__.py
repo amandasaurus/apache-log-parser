@@ -98,7 +98,7 @@ class FixedOffset(tzinfo):
 def apachetime(s):
     """
     Given a string representation of a datetime in apache format (e.g.
-    "01/Sep/2012:06:05:11 +0000"), return the python datetime for that string, with timezone
+    "[01/Sep/2012:06:05:11 +0000]"), return the python datetime for that string, with timezone
     """
     month_map = {'Jan': 1, 'Feb': 2, 'Mar':3, 'Apr':4, 'May':5, 'Jun':6, 'Jul':7,
         'Aug':8,  'Sep': 9, 'Oct':10, 'Nov': 11, 'Dec': 12}
