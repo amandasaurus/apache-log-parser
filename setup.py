@@ -11,6 +11,7 @@ setup(name="apache-log-parser",
       packages=['apache_log_parser'],
       install_requires = [
         'user-agents',
+        'six',
       ],
       license = 'GPLv3+',
       description = "Parse lines from an apache log file",

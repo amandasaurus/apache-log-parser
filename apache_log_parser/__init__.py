@@ -1,5 +1,6 @@
 import re
 from datetime import datetime, tzinfo, timedelta
+from six.moves.urllib.parse import urlparse, parse_qs, parse_qsl
 
 import user_agents
 
@@ -42,7 +43,29 @@ def extra_request_from_first_line(matched_strings):
         # Possibly garbage, ignore it
         results = { 'request_first_line': first_line, 'request_method': '', 'request_url': '', 'request_http_ver': ''}
     else:
-        results = { 'request_first_line': first_line, 'request_method': match.groupdict()['method'], 'request_url': match.groupdict()['url'], 'request_http_ver': match.groupdict()['http_ver']}
+        url = match.groupdict()['url']
+        results = { 'request_first_line': first_line, 'request_method': match.groupdict()['method'], 'request_url': url, 'request_http_ver': match.groupdict()['http_ver']}
+
+        # Parse the URL:
+        parsed_url = urlparse(url)
+        results.update({
+            'request_url_scheme': parsed_url.scheme,
+            'request_url_netloc': parsed_url.netloc,
+            'request_url_path': parsed_url.path,
+            'request_url_query': parsed_url.query,
+            'request_url_fragment': parsed_url.fragment,
+            'request_url_username': parsed_url.username,
+            'request_url_password': parsed_url.password,
+            'request_url_hostname': parsed_url.hostname,
+            'request_url_port': parsed_url.port,
+        })
+
+        # Parse the query string
+        results.update({
+            'request_url_query_dict': parse_qs(parsed_url.query),
+            'request_url_query_list': parse_qsl(parsed_url.query),
+            'request_url_query_simple_dict': dict(parse_qsl(parsed_url.query))
+        })
     return results
 
 def parse_user_agent(matched_strings):
@@ -135,7 +158,7 @@ def format_time(matched_strings):
     }
 
 IPv4_ADDR_REGEX = '(?:\d{1,3}\.){3}\d{1,3}'
-IPv6_ADDR_REGEX = "([0-9A-Fa-f]{0,4}:){2,7}([0-9A-Fa-f]{0,4})"
+IPv6_ADDR_REGEX = r"([0-9A-Fa-f]{0,4}:){2,7}([0-9A-Fa-f]{1,4}|("+IPv4_ADDR_REGEX+"))"
 IP_ADDR_REGEX = "("+IPv4_ADDR_REGEX+"|"+IPv6_ADDR_REGEX+")"
 
 FORMAT_STRINGS = [

@@ -2,8 +2,6 @@
 import unittest
 import apache_log_parser
 import datetime
-import doctest
-import os.path
 
 class ApacheLogParserTestCase(unittest.TestCase):
     maxDiff = None
@@ -35,6 +33,12 @@ class ApacheLogParserTestCase(unittest.TestCase):
             'time_us': '363701', 'num_keepalives': '0', 'request_first_line': 'GET /mypage/this/that?stuff=all HTTP/1.1',
             'pid': '18572', 'response_bytes_clf': '5129', 'request_header_user_agent__os__family': u'Windows 7',
             'request_url': '/mypage/this/that?stuff=all', 'request_http_ver': '1.1',
+            'request_url_fragment': '', 'request_url_hostname': None,
+            'request_url_netloc': '', 'request_url_password': None,
+            'request_url_path': '/mypage/this/that', 'request_url_port': None,
+            'request_url_query': 'stuff=all', 'request_url_query_dict': {'stuff': ['all']}, 'request_url_query_list': [('stuff', 'all')],
+            'request_url_query_simple_dict': {'stuff': 'all'},
+            'request_url_scheme': '', 'request_url_username': None,
             'request_header_referer': '-', 'server_name': 'mysite.co.uk', 'request_header_user_agent__is_mobile': False,
             'request_header_user_agent__browser__version_string': '37.0.2062',
             'request_header_user_agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36',
@@ -59,6 +63,12 @@ class ApacheLogParserTestCase(unittest.TestCase):
             'pid': '25572', 'request_first_line': 'GET /Class/method/ HTTP/1.1', 'request_method': 'GET',
             'server_port': '80', 'response_bytes_clf': '2266', 'server_name2': 'othersite',
             'request_url': '/Class/method/',
+            'request_url_fragment': '', 'request_url_hostname': None,
+            'request_url_netloc': '', 'request_url_password': None,
+            'request_url_path': '/Class/method/', 'request_url_port': None,
+            'request_url_query': '', 'request_url_query_dict': {}, 'request_url_query_simple_dict': {},
+            'request_url_query_list': [], 'request_url_scheme': '',
+            'request_url_username': None,
             'env_unique_id': 'VHiZx6wQGCMAAEiBE8kAAAAA:VHiZx6wQGiMAAGPkBnMAAAAH:VHiZx6wQGiMAAGPkBnMAAAAH',
             'remote_ip': '192.168.1.100'})
 
@@ -79,6 +89,12 @@ class ApacheLogParserTestCase(unittest.TestCase):
             'response_bytes_clf': '344',
             'server_name2': 'blah.foo.com',
             'request_url': '/content_images/3/American-University-in-Cairo-AUC.jpeg.jpg',
+            'request_url_fragment': '', 'request_url_hostname': None,
+            'request_url_netloc': '', 'request_url_password': None,
+            'request_url_path': '/content_images/3/American-University-in-Cairo-AUC.jpeg.jpg',
+            'request_url_port': None, 'request_url_query': '',
+            'request_url_query_dict': {}, 'request_url_query_list': [], 'request_url_query_simple_dict': {},
+            'request_url_scheme': '', 'request_url_username': None,
             'remote_host': '10.1.1.1',
             'time_received': '[08/Mar/2015:18:06:58 -0400]',
             'time_received_datetimeobj': datetime.datetime(2015, 3, 8, 18, 6, 58),
@@ -126,13 +142,24 @@ class ApacheLogParserTestCase(unittest.TestCase):
         self.assertNotEqual(log_data1, None)
         self.assertEqual(log_data1['status'], '-')
 
-    def test_issue10_ipv6(self):
-        parser = apache_log_parser.make_parser("%h %a %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"")
-        sample1 = '10.178.98.112 2607:5300:60:2c74:: - - [24/Mar/2015:16:40:45 -0400] "GET /category/blog/page/3 HTTP/1.0" 200 41207 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.30 (KHTML, like Gecko) Ubuntu/10.10 Chromium/12.0.742.112 Chrome/12.0.742.112 Safari/534.30"'
-        log_data1 = parser(sample1)
-
-    def test_doctest_readme(self):
-        doctest.testfile("../README.md")
+    def test_parsed_url(self):
+        parser = apache_log_parser.Parser("%h %v %V %l %u %t %r %>s %b %{Referer}i %{User-agent}i")
+        log = "10.1.1.1 T1 blah.foo.com - - [08/Mar/2015:18:06:58 -0400] GET /content_images/3/American-University-in-Cairo-AUC.jpeg.jpg?loc=12,23&loc=4,5&query=route&car=yes HTTP/1.1 404 344 http://www.google.ie AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.76 Safari/537.36"
+        data = parser.parse(log)
+        self.assertEqual(data['request_url'], '/content_images/3/American-University-in-Cairo-AUC.jpeg.jpg?loc=12,23&loc=4,5&query=route&car=yes')
+        self.assertEqual(data['request_url_scheme'], '')
+        self.assertEqual(data['request_url_fragment'],  '')
+        self.assertEqual(data['request_url_hostname'],  None)
+        self.assertEqual(data['request_url_netloc'],  '')
+        self.assertEqual(data['request_url_password'],  None)
+        self.assertEqual(data['request_url_path'],  '/content_images/3/American-University-in-Cairo-AUC.jpeg.jpg')
+        self.assertEqual(data['request_url_port'],  None)
+        self.assertEqual(data['request_url_query'],  'loc=12,23&loc=4,5&query=route&car=yes')
+        self.assertEqual(data['request_url_query_dict'],  {'car': ['yes'], 'query': ['route'], 'loc': ['12,23', '4,5']})
+        self.assertEqual(data['request_url_query_list'],  [('loc', '12,23'), ('loc', '4,5'), ('query', 'route'), ('car', 'yes')])
+        self.assertEqual(data['request_url_query_simple_dict'],  {'car': 'yes', 'query': 'route', 'loc': '4,5'})
+        self.assertEqual(data['request_url_scheme'],  '')
+        self.assertEqual(data['request_url_username'],  None)
 
 
 
